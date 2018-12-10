@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #include <math.h>
 
@@ -634,3 +635,36 @@ void displayNetworkWeightsForDebugging(Network *nn){
     
 }
 
+void writeWeightsToFile(Network *nn, char path []) {
+
+    FILE *out;
+    char *mode = "w";
+    out = fopen(path, mode);
+
+    if (out == NULL) {
+        fprintf(stderr, "cant open file. exiting...");
+	exit(1);
+    }
+
+    Layer *layer_hidden = getLayer(nn, HIDDEN);
+    Layer *layer_output = getLayer(nn, OUTPUT);
+
+    fprintf(out, "HIDDEN LAYER WEIGHTS\n");
+    for ( int i = 0 ; i < layer_hidden->ncount ; ++i ) {
+        fprintf(out, "  Neuron %d:\n", i);
+	Node *n = getNode(layer_hidden, i);
+	for ( int j = 0 ; j < n->wcount ; ++j ) {
+            fprintf(out, "    %d:%f\n", j, n->weights[j]);
+	}
+    }
+    fprintf(out, "OUTPUT LAYER WEIGHTS\n");
+    for ( int i = 0 ; i < layer_output->ncount ; ++i ) {
+        fprintf(out, "  Neuron %d:\n", i);
+	Node *n = getNode(layer_output, i);
+	for ( int j = 0 ; j < n->wcount ; ++j ) {
+            fprintf(out, "    %d:%f\n", j, n->weights[j]);
+	}
+    }
+
+    fclose(out);
+}

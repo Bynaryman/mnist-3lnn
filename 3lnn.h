@@ -128,7 +128,11 @@ void backPropagateNetwork(Network *nn, int targetClassification);
 int getNetworkClassification(Network *nn);
 
 
-
+/**
+ * @brief write to a file the weights of each node of the layer
+ * @param nn A pointer to the NN
+ */
+void writeWeightsToFile(Network *nn, char path[]);
 
 void displayNetworkWeightsForDebugging(Network *nn);
 

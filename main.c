@@ -167,7 +167,9 @@ int main(int argc, const char * argv[]) {
     
     // Training the network by adjusting the weights based on error using the  TRAINING dataset
     trainNetwork(nn);
-    
+
+    writeWeightsToFile(nn, "./tmp");
+
     // Testing the during training derived network using the TESTING dataset
     testNetwork(nn);
     
