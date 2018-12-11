@@ -134,5 +134,12 @@ int getNetworkClassification(Network *nn);
  */
 void writeWeightsToFile(Network *nn, char path[]);
 
+/**
+ * @brief write to a file the weights of each node of the layer
+ * @param nn A pointer to the NN
+ */
+void writeWeightsToFileForJulia(Network *nn, char path[]);
+
+
 void displayNetworkWeightsForDebugging(Network *nn);
 
