@@ -1,6 +1,6 @@
 using SigmoidNumbers
 
-TYPEOUT = Posit{16,1}
+TYPEOUT = Posit{16,0}
 MNIST_DIM = 28*28
 NB_NEURON = 20
 NB_OUTPUT = 10
@@ -16,7 +16,11 @@ for i = 1:NB_NEURON
 end
 
 for i = 1:NB_OUTPUT
-    output_weights[i, :] = Array{TYPEOUT}(parse.(Float64, lines[(((i-1)*NB_NEURON)+1):(i*NB_NEURON)]))
+	output_weights[i, :] = Array{TYPEOUT}(parse.(Float64, lines[(((i-1)*NB_NEURON)+1)+(MNIST_DIM*NB_NEURON):(i*NB_NEURON)+(MNIST_DIM*NB_NEURON)]))
+	# uncomment below to see difference between posit 16 values and fp64
+	# if (i == NB_OUTPUT)
+	# 	show(IOContext(STDOUT, limit=true), "text/plain", (Float64.(TYPEOUT.(parse.(Float64, lines[(((i-1)*NB_NEURON)+1)+(MNIST_DIM*NB_NEURON):(i*NB_NEURON)+(MNIST_DIM*NB_NEURON)])))))
+	# end
 end
 
 mkpath("hidden_weights")
@@ -33,10 +37,10 @@ for i = 1:NB_OUTPUT
     close(f)
 end
 
-show(IOContext(STDOUT, limit=true), "text/plain", hidden_weights)
-print("\n")
-print("\n")
-show(IOContext(STDOUT, limit=true), "text/plain", output_weights)
-print("\n")
+# show(IOContext(STDOUT, limit=true), "text/plain", hidden_weights)
+# print("\n")
+# print("\n")
+# show(IOContext(STDOUT, limit=true), "text/plain", output_weights)
+# print("\n")
 
 close(f)
