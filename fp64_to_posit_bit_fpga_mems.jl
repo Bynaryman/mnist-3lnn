@@ -25,14 +25,14 @@ end
 
 mkpath("hidden_weights")
 for i = 1:NB_NEURON
-    f=open(string("hidden_weights/hidden_weights_", i), "w")
+    f=open(string("hidden_weights/hidden_weights_", i-1), "w")
     writedlm(f, bits.(hidden_weights[i, :]), "\n")
     close(f)
 end
 
 mkpath("output_weights")
 for i = 1:NB_OUTPUT
-    f=open(string("output_weights/output_weights_", i), "w")
+    f=open(string("output_weights/output_weights_", i-1), "w")
     writedlm(f, bits.(output_weights[i, :]), "\n")
     close(f)
 end
