@@ -118,7 +118,8 @@ int main (int argc, char * argv[]) {
 
     // convert out bitset to out char
     for (int i = 0 ; i < (SIZE_DATA_OUT/2) ; i++) {
-        output_data[i] = (unsigned char)( ((output_data_4b[2*i].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)+1].to_ulong() & 0x000000000000000F) );
+        // output_data[i] = (unsigned char)( ((output_data_4b[2*i].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)+1].to_ulong() & 0x000000000000000F) );
+        output_data[i] = (unsigned char)( ((output_data_4b[(2*i)+1].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)].to_ulong() & 0x000000000000000F) );
         std::cout << (int)output_data[i] << " " << output_data_4b[2*i] << " " <<  output_data_4b[(2*i)+1] << std::endl;
     }
 
