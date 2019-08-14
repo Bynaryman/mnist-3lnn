@@ -84,9 +84,13 @@ double getActFctDerivative(Network *nn, LayerType ltype, double outVal){
     if (ltype==HIDDEN) actFct = nn->hidLayerActType;
                   else actFct = nn->outLayerActType;
     
-    if (actFct==TANH) dVal = 1-pow(tanh(outVal),2);
-                 else dVal = outVal * (1-outVal);
-    
+    if (actFct==TANH) {
+        dVal = 1-pow(tanh(outVal),2);
+    } else if (actFct==SIGMOID) {
+        dVal = outVal * (1-outVal);
+    } else if (actFct==RELU) {
+        dVal = (outVal > 0) ? 1 : 0;
+    }
     return dVal;
 }
 
@@ -232,9 +236,15 @@ void activateNode(Network *nn, LayerType ltype, int id){
     if (ltype==HIDDEN) actFct = nn->hidLayerActType;
     else actFct = nn->outLayerActType;
     
-    if (actFct==TANH)   n->output = tanh(n->output);
-    else n->output = 1 / (1 + (exp((double)-n->output)) );
-    
+    if (actFct==TANH)   {
+        n->output = tanh(n->output);
+    }
+    else if (actFct==SIGMOID) {
+        n->output = 1 / (1 + (exp((double)-n->output)) );
+    }
+    else if (actFct==RELU) {
+        n->output = (n->output <= 0)? 0 : n->output;
+    }
 }
 
 
@@ -452,8 +462,9 @@ void setNetworkDefaults(Network *nn){
     nn->hidLayerActType = SIGMOID;
     nn->outLayerActType = SIGMOID;
     
-    nn->learningRate    = 0.004;    // TANH 78.0%
+    //nn->learningRate    = 0.00004;  // TANH 78.0%
     nn->learningRate    = 0.2;      // SIGMOID 91.5%
+    //nn->learningRate      = 0.001;        // RELU
     
 }
 

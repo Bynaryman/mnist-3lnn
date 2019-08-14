@@ -39,9 +39,12 @@ Vector *getVectorFromImage(MNIST_Image *img){
     
     v->size = MNIST_IMG_WIDTH*MNIST_IMG_HEIGHT;
     
-    for (int i=0;i<v->size;i++)
-        v->vals[i] = img->pixel[i] ? 1 : 0;
-    
+    for (int i=0;i<v->size;i++) {
+        //v->vals[i] = img->pixel[i] ? 1 : 0;  // 0-1
+        v->vals[i] = (double)img->pixel[i] / (double)255.0f;  // [0:1]
+        //v->vals[i] =  ((double)img->pixel[i] - 128) / 128.0f;  // [-1:1]
+        //v->vals[i] = (double)img->pixel[i];  // [0:255]
+    }
     return v;
 }
 
@@ -85,7 +88,7 @@ void trainNetwork(Network *nn){
         
         // Display progress during training
         displayTrainingProgress(imgCount, errCount, 3,5);
-//        displayImage(&img, lbl, classification, 7,6);
+        displayImage(&img, lbl, classification, 7,6);
 
     }
     

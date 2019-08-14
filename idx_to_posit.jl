@@ -3,7 +3,7 @@ import GZip
 
 using SigmoidNumbers
 
-TYPEOUT = Posit{16,0}
+TYPEOUT = Posit{4,0}
 
 function readIdx(file_name)
     fs = GZip.open(file_name, "r")
@@ -31,21 +31,54 @@ function readIdx(file_name)
     end
     
     close(fs)
-    return TYPEOUT.(Float16.(contents)) 
+    return TYPEOUT.((Float16.(contents))./255) 
 end
 
 t = readIdx("./train-images-idx3-ubyte.gz")
-print(size(t)[1])
+#print(reinterpret.(UInt, t)[1:4])
+
+# t2 = Array{UInt8}(784*5000) # each uint8 is 2 posit<4,0>
+# for i in 1:2:784*10000
+#     posit1 = t[i]
+#     posit2 = t[i+1]
+#     str_bin2posits = string(bits(posit1),bits(posit2))
+#     t2[Int((i+1)/2)] = parse(UInt8, str_bin2posits, 2)
+# end
+
+# str_bin2posits = ""
+# for i in 1:2:784*1
+#     posit1 = t[i]
+#     posit2 = t[i+1]
+#     str_bin2posits = string(str_bin2posits,bits(posit1),bits(posit2), "\n")
+# end
+# f = open("./posit_mnist_test.raw", "w")
+# write(f, str_bin2posits)
+# close(f)
+
+# t2 = [parse(UInt8, string("0x",(hex(reinterpret(UInt, x),16)[1:2]))) for x in t]
+# res = ""
+# for i = 1:2:784
+# 	#res = string(res, bits(t[i]), bits(t[i+1]), "\n")
+# 	res = string(res, hex(reinterpret(UInt, t[i]),16)[1:4], 
+# 		     hex(reinterpret(UInt, t[i+1]),16)[1:4], "\n")
+# end
+#
+#
+offset = 1
+nb_pics = 128
 res = ""
-for i = 1:2:784
+for i = (offset*784)+1:(offset*784)+(784*nb_pics)
 	#res = string(res, bits(t[i]), bits(t[i+1]), "\n")
-	res = string(res, hex(reinterpret(UInt, t[i]),16)[1:4], 
-		     hex(reinterpret(UInt, t[i+1]),16)[1:4], "\n")
+	res = string(res, hex(reinterpret(UInt, t[i]),16)[1:1], "\n")
 end
 
-f = open("./posit_mnist.raw", "w")
+f = open("./pic_to_classify_4b.raw", "w")
 write(f, res)
 close(f)
-
+# f = open("./posit_mnist_train_set_8b_0es.raw", "w")
+# for i in t2
+#     write(f, hton(i))
+# end
+# close(f)
 
 # show(IOContext(STDOUT, limit=true), "text/plain", readIdx("./train-images-idx3-ubyte.gz"))

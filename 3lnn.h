@@ -15,7 +15,7 @@ typedef struct Node Node;
 typedef struct Vector Vector;
 
 typedef enum LayerType {INPUT, HIDDEN, OUTPUT} LayerType;
-typedef enum ActFctType {SIGMOID, TANH} ActFctType;
+typedef enum ActFctType {SIGMOID, TANH, RELU} ActFctType;
 
 
 

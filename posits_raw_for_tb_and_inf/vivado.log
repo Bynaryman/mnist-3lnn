@@ -1,0 +1,22 @@
+#-----------------------------------------------------------
+# Vivado v2018.2.2 (64-bit)
+# SW Build 2348494 on Mon Oct  1 18:25:39 MDT 2018
+# IP Build 2318053 on Mon Oct  1 21:44:26 MDT 2018
+# Start of session at: Fri Jun  7 12:40:16 2019
+# Process ID: 5578
+# Current directory: /home/lledoux/Desktop/PhD/ML/C/mnist-3lnn/posits_raw_for_tb_and_inf
+# Command line: vivado
+# Log file: /home/lledoux/Desktop/PhD/ML/C/mnist-3lnn/posits_raw_for_tb_and_inf/vivado.log
+# Journal file: /home/lledoux/Desktop/PhD/ML/C/mnist-3lnn/posits_raw_for_tb_and_inf/vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project /home/lledoux/Desktop/kintex7/HPC_XC7K420T_2019/riffa/fpga/xilinx/kc705/KC705_Gen2x8If128/prj/KC705_Gen2x8If128.xpr
+Scanning sources...
+Finished scanning sources
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1704] No user IP repositories specified
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/home/lledoux/opt/Xilinx/Vivado/2018.2/data/ip'.
+open_project: Time (s): cpu = 00:00:17 ; elapsed = 00:00:06 . Memory (MB): peak = 6190.562 ; gain = 147.023 ; free physical = 154 ; free virtual = 25735
+update_compile_order -fileset sources_1
+exit
+INFO: [Common 17-206] Exiting Vivado at Fri Jun  7 12:44:16 2019...
