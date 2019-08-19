@@ -76,30 +76,32 @@ int main (int argc, char * argv[]) {
 
     // general constants
     const unsigned int chunk_width(128);
-    const unsigned int NB_chunk(1);
     const unsigned int PIC_DIM(784);
     const unsigned int chunk_size(PIC_DIM*chunk_width);
-    const unsigned int SIZE_DATA_OUT(NB_chunk * chunk_width * PIC_DIM);
+
+    // will be recomputed below
+    unsigned int NB_chunk(1);
 
     // input stuff declaration
     std::string in_file_path("");
     in_file_path = static_cast<std::string>(argv[1]); 
     unsigned char * in_data;
     size_t size_in = load_file_to_memory(in_file_path.c_str(), &in_data);
+    NB_chunk =  (size_in*2)/(chunk_width*PIC_DIM);
     
     // convert in char to bitset
     std::vector<std::bitset<4>> in_data_4b(2*size_in);
     for (int i = 0 ; i < size_in ; i++) {
-        in_data_4b[(2*i)]   = (in_data[i] >> 4) & 0xF;
-        in_data_4b[(2*i)+1] = (in_data[i]     ) & 0xF;
+        in_data_4b[(2*i)+1] = (in_data[i] >> 4) & 0xF;
+        in_data_4b[(2*i)]   = (in_data[i]     ) & 0xF;
         // std::cout << in_data_4b[2*i] << " " << in_data_4b[(2*i)+1] << std::endl; 
     }
 
     // output stuff declaration
-    std::vector<unsigned char> output_data(SIZE_DATA_OUT/2);
+    std::vector<unsigned char> output_data(size_in);
     std::string out_file_path("");
     out_file_path = static_cast<std::string>(argv[2]);
-    std::vector<std::bitset<4>> output_data_4b(SIZE_DATA_OUT);
+    std::vector<std::bitset<4>> output_data_4b(2*size_in);
 
     // compute out data
     // planar to chunk_width pics chunk interleave
@@ -117,10 +119,9 @@ int main (int argc, char * argv[]) {
     }
 
     // convert out bitset to out char
-    for (int i = 0 ; i < (SIZE_DATA_OUT/2) ; i++) {
-        // output_data[i] = (unsigned char)( ((output_data_4b[2*i].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)+1].to_ulong() & 0x000000000000000F) );
+    for (int i = 0 ; i < size_in ; i++) {
         output_data[i] = (unsigned char)( ((output_data_4b[(2*i)+1].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)].to_ulong() & 0x000000000000000F) );
-        std::cout << (int)output_data[i] << " " << output_data_4b[2*i] << " " <<  output_data_4b[(2*i)+1] << std::endl;
+        // std::cout << (int)output_data[i] << " " << output_data_4b[2*i] << " " <<  output_data_4b[(2*i)+1] << std::endl;
     }
 
     // write out to file

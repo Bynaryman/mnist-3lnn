@@ -103,7 +103,6 @@ int main (int argc, char * argv[]) {
     std::string out_file_path("");
     out_file_path = static_cast<std::string>(argv[2]);
     std::vector<std::bitset<4>> output_data_4b(2*size_in);
-            std::cout << NB_chunk << std::endl;
    
     // compute out data
     // planar to chunk_width pics chunk interleave
@@ -122,9 +121,8 @@ int main (int argc, char * argv[]) {
 
     // convert out bitset to out char
     for (int i = 0 ; i < size_in ; i++) {
-        // output_data[i] = (unsigned char)( ((output_data_4b[2*i].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)+1].to_ulong() & 0x000000000000000F) );
         output_data[i] = (unsigned char)( ((output_data_4b[(2*i)+1].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)].to_ulong() & 0x000000000000000F) );
-        std::cout << (int)output_data[i] << " " << output_data_4b[2*i] << " " <<  output_data_4b[(2*i)+1] << std::endl;
+        // std::cout << (int)output_data[i] << " " << output_data_4b[2*i] << " " <<  output_data_4b[(2*i)+1] << std::endl;
     }
 
     // write out to file

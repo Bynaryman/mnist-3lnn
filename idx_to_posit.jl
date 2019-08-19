@@ -35,6 +35,7 @@ function readIdx(file_name)
 end
 
 t = readIdx("./train-images-idx3-ubyte.gz")
+show(IOContext(STDOUT, limit=false), "text/plain", t[1+784:784+784])
 #print(reinterpret.(UInt, t)[1:4])
 
 # t2 = Array{UInt8}(784*5000) # each uint8 is 2 posit<4,0>
@@ -44,6 +45,11 @@ t = readIdx("./train-images-idx3-ubyte.gz")
 #     str_bin2posits = string(bits(posit1),bits(posit2))
 #     t2[Int((i+1)/2)] = parse(UInt8, str_bin2posits, 2)
 # end
+# f = open("./posit_mnist_train_set_8b_0es.raw", "w")
+# for i in t2
+#     write(f, hton(i))
+# end
+# close(f)
 
 # str_bin2posits = ""
 # for i in 1:2:784*1
@@ -63,22 +69,31 @@ t = readIdx("./train-images-idx3-ubyte.gz")
 # 		     hex(reinterpret(UInt, t[i+1]),16)[1:4], "\n")
 # end
 #
-#
-offset = 1
-nb_pics = 128
-res = ""
-for i = (offset*784)+1:(offset*784)+(784*nb_pics)
-	#res = string(res, bits(t[i]), bits(t[i+1]), "\n")
-	res = string(res, hex(reinterpret(UInt, t[i]),16)[1:1], "\n")
-end
 
-f = open("./pic_to_classify_4b.raw", "w")
-write(f, res)
-close(f)
-# f = open("./posit_mnist_train_set_8b_0es.raw", "w")
-# for i in t2
-#     write(f, hton(i))
+
+
+# to create test bench 4 bits
+# offset = 0
+# nb_pics = 128
+# res = ""
+# for i = (offset*784)+1:(offset*784)+(784*nb_pics)
+# 	#res = string(res, bits(t[i]), bits(t[i+1]), "\n")
+# 	res = string(res, hex(reinterpret(UInt, t[i]),16)[1:1], "\n")
 # end
+# f = open("./pic_to_classify_4b.raw", "w")
+# write(f, res)
 # close(f)
+
+# to create mnist 4 bits
+f = open("./pic_to_classify_4b.raw", "w")
+for i in 1:2:(size(t,1)-96*784) # we remove the last 96 pic to have a 128 pic multiple
+    a1 = parse(UInt8, (hex(reinterpret(UInt, t[i  ]),16)[1:1]))
+    a2 = parse(UInt8, (hex(reinterpret(UInt, t[i+1]),16)[1:1]))
+    #a1 = reinterpret(UInt, t[i  ])
+    #a2 = reinterpret(UInt, t[i+1])
+    b = (a1 & 0x0F) | ((a2<<4) & 0xF0)
+    write(f, b)
+end
+close(f)
 
 # show(IOContext(STDOUT, limit=true), "text/plain", readIdx("./train-images-idx3-ubyte.gz"))

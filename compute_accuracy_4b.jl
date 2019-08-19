@@ -3,7 +3,7 @@ import Base.ntoh
 using SigmoidNumbers
 
 TYPEIN = Posit{4,0}
-NB_VALUES = 256
+NB_VALUES = 60000-96 # to be multiple of 128
 NB_OUT_CLASS = 10
 
 function readIdx(file_name)
@@ -37,7 +37,7 @@ labels = readIdx("./train-labels-idx1-ubyte")
 # labels = readIdx("./t10k-labels-idx1-ubyte")
 #show(IOContext(STDOUT, limit=true), "text/plain", labels)
 
-f = open("./values_posit_out_4b_norm_de_i.raw")
+f = open("./classif_power9_planar_4bits.raw")
 nb_values_to_read = Int64(NB_VALUES*NB_OUT_CLASS/2)
 
 posit_4b_interleave = []
@@ -73,7 +73,7 @@ nok = 0
 skiped = 0
 #show(IOContext(STDOUT, limit=true), "text/plain", classifications)
 
-for i in 1:256#size(labels,1)
+for i in 1:NB_VALUES
     if classifications[i][1] == 10
         skiped = skiped + 1
     else
