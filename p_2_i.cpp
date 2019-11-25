@@ -74,6 +74,12 @@ void save_file_from_memory(std::string path, const std::vector<unsigned char> &o
 
 int main (int argc, char * argv[]) {
 
+    // args description
+    // argv[1] : str, input path of planar data set
+    // argv[2] : str, output path for interleave data set
+    // argv[3] : integer, bit width of posit
+    // argv[4] : integer, NB_MLP (allows to compute the skip part)
+
     // general constants
     const unsigned int chunk_width(128);
     const unsigned int PIC_DIM(784);

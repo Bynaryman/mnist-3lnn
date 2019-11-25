@@ -3,7 +3,7 @@ import Base.ntoh
 using SigmoidNumbers
 
 TYPEIN = Posit{8,0}
-NB_VALUES = 10000
+NB_VALUES = 60000-32
 NB_OUT_CLASS = 10
 
 function readIdx(file_name)
@@ -33,10 +33,10 @@ function readIdx(file_name)
     return contents
 end
 
-labels = readIdx("./t10k-labels-idx1-ubyte")
+labels = readIdx("./train-labels-idx1-ubyte")
 #show(IOContext(STDOUT, limit=true), "text/plain", t)
 
-f = open("./values_posit_out_8b_norm.raw")
+f = open("./classifications_done/mlp30_8_0_nfq_rne_planar.raw")
 content = read(f, UInt8, NB_VALUES*NB_OUT_CLASS)
 float_content = Float64.(TYPEIN.(content))
 #show(IOContext(STDOUT, limit=true), "text/plain", float_content)
@@ -53,7 +53,7 @@ close(f)
 ok = 0
 nok = 0
 
-for i in 1:size(labels,1)
+for i in 1:NB_VALUES
 	if size(find(classifications[i] .== labels[i]),1) > 0
             ok = ok + 1
 	else
@@ -64,4 +64,4 @@ end
 acc = ok/(ok + nok)*100
 print("ok : ", ok, "\n")
 print("nok : ", nok, "\n")
-print("ACCURACY : ", acc, "\n")
+print("TOP 1 ACCURACY : ", acc, "\n")

@@ -37,13 +37,12 @@ for i = 1:(NB_OUTPUT * NB_NEURON)
     output_weights[i] = parse.(Float64, lines[i+(MNIST_DIM * NB_NEURON)])
 end
 
-p1 = histogram(hidden_weights, bins=30, label="repartition of hidden weights", color="orange")
-p2 = histogram(output_weights, bins=30, label="repartition of output weights")
-p3 = histogram(D4, bins=30, label="repartition of posit<16,0>", color="green")
-p4 = histogram(C4, bins=30, label="repartition of posit<8,0>", color="pink")
+p1 = histogram(hidden_weights, bins=50, label="repartition of hidden weights", color="orange")
+p2 = histogram(output_weights, bins=50, label="repartition of output weights")
+#p3 = histogram(D4, bins=500, label="repartition of posit<16,0>", color="green")
+p4 = histogram(C4, bins=50, label="repartition of posit<8,0>", color="pink")
 #p3 = histogram(Float64.(D3), label="repartition of posits<16,0>", color="green")
-plot(p1, p2, p4, p3, layout=(2,2))
+Show[p1,p2,PlotRange->{{-5.0,5.0}, All}]
+#plot(p1, p2, p4)
 gui()
-
-
 close(f)
