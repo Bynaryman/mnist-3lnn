@@ -77,16 +77,14 @@ int main (int argc, char * argv[]) {
     // args description
     // argv[1] : str, input path of planar data set
     // argv[2] : str, output path for interleave data set
-    // argv[3] : integer, bit width of posit
-    // argv[4] : integer, NB_MLP (allows to compute the skip part)
 
     // general constants
     const unsigned int PIC_DIM(784);
     const uint64_t posit_width = 4;
 
     // will be recomputed below
-    double char_ratio = 8/posit_width;
-    std::cout << "char ratio" << char_ratio << std::endl;
+    double char_ratio = 8/(double)posit_width;
+    std::cout << "char ratio: " << char_ratio << std::endl;
     uint64_t chunk_width = 64 * char_ratio;
     unsigned int chunk_size(PIC_DIM*chunk_width);
 
@@ -109,6 +107,9 @@ int main (int argc, char * argv[]) {
     std::vector<std::bitset<posit_width>> bitset_domain_planar(nb_datum);
     uint64_t* planar_scratchpad = reinterpret_cast<uint64_t*>(in_data);
     uint64_t nb_posits_in64bp = 64 / posit_width;
+    std::cout << "nb posits per 64bits pointer: " << nb_posits_in64bp << std::endl;
+    std::cout << "nb chunk: " << NB_chunk<< std::endl;
+    std::cout << "nb pixels: " << nb_datum<< std::endl;
     uint64_t mask = (1ULL << posit_width)-1;
     for (int i = 0, k=0 ; i < nb_datum ; i+=nb_posits_in64bp, k++ ) {
         for (int j = 0 ; j < nb_posits_in64bp ; j++) {

@@ -85,7 +85,7 @@ int main (int argc, char * argv[]) {
     const uint64_t posit_width = 4;
 
     // vars
-    double char_ratio = 8/posit_width;
+    double char_ratio = 8.0f/(double)posit_width; // size of byte divided by size of the posit configuration
     std::cout << "char ratio" << char_ratio << std::endl;
     uint64_t chunk_width = 64 * char_ratio;
     uint64_t chunk_size(PIC_DIM*chunk_width);
