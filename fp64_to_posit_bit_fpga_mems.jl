@@ -1,6 +1,6 @@
 using SigmoidNumbers
 
-TYPEOUT = Posit{4,0}
+TYPEOUT = Posit{16,0}
 MNIST_DIM = 28*28
 NB_NEURON = 20
 NB_OUTPUT = 10

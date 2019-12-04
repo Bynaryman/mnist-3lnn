@@ -77,19 +77,15 @@ int main (int argc, char * argv[]) {
     // args description
     // argv[1] : str, input path of planar data set
     // argv[2] : str, output path for interleave data set
-    // argv[3] : integer, bit width of posit
 
     // general constants
     const unsigned int PIC_DIM(10); // "pictures" are in fact classifications
 
-    // will be recomputed below
-    const uint64_t posit_width = 8;
-
     // arg cli
-    // posit_width = 9; // std::stoll(argv[3]);
+    const uint64_t posit_width = 4;
 
     // vars
-    uint64_t char_ratio = 8/posit_width;
+    double char_ratio = 8/posit_width;
     std::cout << "char ratio" << char_ratio << std::endl;
     uint64_t chunk_width = 64 * char_ratio;
     uint64_t chunk_size(PIC_DIM*chunk_width);
@@ -158,6 +154,7 @@ int main (int argc, char * argv[]) {
             planar_posits_64b |= (bitset_domain_planar[i+j].to_ullong() << shift_amount) ;
         }
         planar_scrathpad[k] = planar_posits_64b;
+        if (i==0) std::cout << i << " " << std::hex << planar_scrathpad[k] << std::dec <<  std::endl;
     }
 
     // write out to file

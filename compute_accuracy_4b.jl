@@ -37,7 +37,7 @@ labels = readIdx("./train-labels-idx1-ubyte")
 # labels = readIdx("./t10k-labels-idx1-ubyte")
 #show(IOContext(STDOUT, limit=true), "text/plain", labels)
 
-f = open("./classif_power9_planar_4bits.raw")
+f = open("classifications_done/mlp30_4_0_nfq_rne_planar.raw")
 nb_values_to_read = Int64(NB_VALUES*NB_OUT_CLASS/2)
 
 posit_4b_interleave = []

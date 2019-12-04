@@ -81,33 +81,47 @@ int main (int argc, char * argv[]) {
     // argv[4] : integer, NB_MLP (allows to compute the skip part)
 
     // general constants
-    const unsigned int chunk_width(128);
     const unsigned int PIC_DIM(784);
-    const unsigned int chunk_size(PIC_DIM*chunk_width);
+    const uint64_t posit_width = 4;
 
     // will be recomputed below
-    unsigned int NB_chunk(1);
+    double char_ratio = 8/posit_width;
+    std::cout << "char ratio" << char_ratio << std::endl;
+    uint64_t chunk_width = 64 * char_ratio;
+    unsigned int chunk_size(PIC_DIM*chunk_width);
 
     // input stuff declaration
     std::string in_file_path("");
     in_file_path = static_cast<std::string>(argv[1]); 
     unsigned char * in_data;
     size_t size_in = load_file_to_memory(in_file_path.c_str(), &in_data);
-    NB_chunk =  (size_in*2)/(chunk_width*PIC_DIM);
+    uint64_t nb_datum = size_in * char_ratio; 
+    uint64_t NB_chunk =  nb_datum/chunk_size;
     
     // convert in char to bitset
-    std::vector<std::bitset<4>> in_data_4b(2*size_in);
-    for (int i = 0 ; i < size_in ; i++) {
-        in_data_4b[(2*i)+1] = (in_data[i] >> 4) & 0xF;
-        in_data_4b[(2*i)]   = (in_data[i]     ) & 0xF;
-        // std::cout << in_data_4b[2*i] << " " << in_data_4b[(2*i)+1] << std::endl; 
+    // std::vector<std::bitset<posit_width>> bitset_domain_interleave(nb_datum);
+    // for (int i = 0 ; i < size_in ; i++) {
+    //     in_data_4b[(2*i)+1] = (in_data[i] >> 4) & 0xF;
+    //     in_data_4b[(2*i)]   = (in_data[i]     ) & 0xF;
+    //     // std::cout << in_data_4b[2*i] << " " << in_data_4b[(2*i)+1] << std::endl; 
+    // }
+
+    std::vector<std::bitset<posit_width>> bitset_domain_planar(nb_datum);
+    uint64_t* planar_scratchpad = reinterpret_cast<uint64_t*>(in_data);
+    uint64_t nb_posits_in64bp = 64 / posit_width;
+    uint64_t mask = (1ULL << posit_width)-1;
+    for (int i = 0, k=0 ; i < nb_datum ; i+=nb_posits_in64bp, k++ ) {
+        for (int j = 0 ; j < nb_posits_in64bp ; j++) {
+            uint32_t shift_amount = j * posit_width;
+            bitset_domain_planar[i+j] = (planar_scratchpad[k] >> (shift_amount)) & mask;
+        }
     }
 
     // output stuff declaration
     std::vector<unsigned char> output_data(size_in);
     std::string out_file_path("");
     out_file_path = static_cast<std::string>(argv[2]);
-    std::vector<std::bitset<4>> output_data_4b(2*size_in);
+    std::vector<std::bitset<posit_width>> bitset_domain_interleave(nb_datum);
 
     // compute out data
     // planar to chunk_width pics chunk interleave
@@ -117,17 +131,24 @@ int main (int argc, char * argv[]) {
         for (int j = chunk_addr, k = 0 ; j < chunk_addr + chunk_size && k < chunk_size ; ++j, ++k) {
             unsigned int picture_number = k % chunk_width;
             unsigned int pixel_number = k / chunk_width;
-//             std::cout << pixel_number << " " << picture_number << std::endl;
-//             std::cout << chunk64_addr+ (picture_number*PIC_DIM) + pixel_number << std::endl;
-//            std::cout << j << std::endl;
-            output_data_4b[j] = in_data_4b[chunk_addr+ (picture_number*PIC_DIM) + pixel_number];
+            bitset_domain_interleave[j] = bitset_domain_planar[chunk_addr+ (picture_number*PIC_DIM) + pixel_number];
         }
     }
 
     // convert out bitset to out char
-    for (int i = 0 ; i < size_in ; i++) {
-        output_data[i] = (unsigned char)( ((output_data_4b[(2*i)+1].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)].to_ulong() & 0x000000000000000F) );
-        // std::cout << (int)output_data[i] << " " << output_data_4b[2*i] << " " <<  output_data_4b[(2*i)+1] << std::endl;
+    // for (int i = 0 ; i < size_in ; i++) {
+    //     output_data[i] = (unsigned char)( ((output_data_4b[(2*i)+1].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)].to_ulong() & 0x000000000000000F) );
+    //     // std::cout << (int)output_data[i] << " " << output_data_4b[2*i] << " " <<  output_data_4b[(2*i)+1] << std::endl;
+    // }
+
+    uint64_t* interleave_scrathpad = reinterpret_cast<uint64_t*>(output_data.data());
+    for (int i = 0, k=0 ; i < nb_datum ; i+=nb_posits_in64bp, k++ ) {
+        uint64_t interleave_posits_64b = 0x0000000000000000;
+        for (int j = 0 ; j < nb_posits_in64bp ; j++) {
+            uint32_t shift_amount = j * posit_width;
+            interleave_posits_64b |= (bitset_domain_interleave[i+j].to_ullong() << shift_amount) ;
+        }
+        interleave_scrathpad[k] = interleave_posits_64b;
     }
 
     // write out to file
