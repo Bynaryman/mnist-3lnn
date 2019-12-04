@@ -80,7 +80,8 @@ int main (int argc, char * argv[]) {
 
     // general constants
     const unsigned int PIC_DIM(784);
-    const uint64_t posit_width = 4;
+    const unsigned int MNIST_TRAIN_SIZE(60000);
+    const uint64_t posit_width = 7;
 
     // will be recomputed below
     double char_ratio = 8/(double)posit_width;
@@ -93,8 +94,9 @@ int main (int argc, char * argv[]) {
     in_file_path = static_cast<std::string>(argv[1]); 
     unsigned char * in_data;
     size_t size_in = load_file_to_memory(in_file_path.c_str(), &in_data);
-    uint64_t nb_datum = size_in * char_ratio; 
-    uint64_t NB_chunk =  nb_datum/chunk_size;
+    uint64_t removed_pictures = MNIST_TRAIN_SIZE % chunk_width;
+    uint64_t nb_datum = (MNIST_TRAIN_SIZE-removed_pictures)*PIC_DIM;
+    uint64_t NB_chunk =  (MNIST_TRAIN_SIZE-removed_pictures)/chunk_width;
     
     // convert in char to bitset
     // std::vector<std::bitset<posit_width>> bitset_domain_interleave(nb_datum);
@@ -107,8 +109,11 @@ int main (int argc, char * argv[]) {
     std::vector<std::bitset<posit_width>> bitset_domain_planar(nb_datum);
     uint64_t* planar_scratchpad = reinterpret_cast<uint64_t*>(in_data);
     uint64_t nb_posits_in64bp = 64 / posit_width;
+    std::cout << "removed pictures: " << removed_pictures << std::endl;
     std::cout << "nb posits per 64bits pointer: " << nb_posits_in64bp << std::endl;
     std::cout << "nb chunk: " << NB_chunk<< std::endl;
+    std::cout << "chunk width: " << chunk_width << std::endl;
+    std::cout << "chunk size: " << chunk_size << std::endl;
     std::cout << "nb pixels: " << nb_datum<< std::endl;
     uint64_t mask = (1ULL << posit_width)-1;
     for (int i = 0, k=0 ; i < nb_datum ; i+=nb_posits_in64bp, k++ ) {
