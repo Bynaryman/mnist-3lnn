@@ -80,23 +80,25 @@ int main (int argc, char * argv[]) {
 
     // general constants
     const unsigned int PIC_DIM(10); // "pictures" are in fact classifications
+    const unsigned int MNIST_TRAIN_SIZE(60000);
 
     // arg cli
-    const uint64_t posit_width = 4;
+    const uint64_t posit_width = 6;
 
     // vars
-    double char_ratio = 8.0f/(double)posit_width; // size of byte divided by size of the posit configuration
-    std::cout << "char ratio" << char_ratio << std::endl;
-    uint64_t chunk_width = 64 * char_ratio;
-    uint64_t chunk_size(PIC_DIM*chunk_width);
+    uint64_t chunk_width = (64 / posit_width) * 8;
+    unsigned int chunk_size(PIC_DIM*chunk_width);
+    std::cout << "chunk size: " << chunk_size << std::endl;
+
    
     // input stuff declaration
     std::string in_file_path("");
     in_file_path = static_cast<std::string>(argv[1]); 
     unsigned char * in_data;
     size_t size_in = load_file_to_memory(in_file_path.c_str(), &in_data);
-    uint64_t nb_datum = size_in * char_ratio; 
-    uint64_t NB_chunk =  nb_datum/chunk_size;
+    uint64_t removed_pictures = MNIST_TRAIN_SIZE % chunk_width;
+    uint64_t nb_datum = (MNIST_TRAIN_SIZE-removed_pictures)*PIC_DIM;
+    uint64_t NB_chunk =  (MNIST_TRAIN_SIZE-removed_pictures)/chunk_width;
     
     // convert in char to bitset
     // std::vector<std::bitset<posit_width>> in_data_4b(nb_datum);
@@ -110,6 +112,12 @@ int main (int argc, char * argv[]) {
     std::vector<std::bitset<posit_width>> bitset_domain_interleave(nb_datum);
     uint64_t* interleave_scrathpad = reinterpret_cast<uint64_t*>(in_data);
     uint64_t nb_posits_in64bp = 64 / posit_width;
+    std::cout << "removed pictures: " << removed_pictures << std::endl;
+    std::cout << "nb posits per 64bits pointer: " << nb_posits_in64bp << std::endl;
+    std::cout << "nb chunk: " << NB_chunk<< std::endl;
+    std::cout << "chunk width: " << chunk_width << std::endl;
+    std::cout << "chunk size: " << chunk_size << std::endl;
+    std::cout << "nb pixels: " << nb_datum<< std::endl;
     uint64_t mask = (1ULL << posit_width)-1;
     for (int i = 0, k=0 ; i < nb_datum ; i+=nb_posits_in64bp, k++ ) {
         for (int j = 0 ; j < nb_posits_in64bp ; j++) {

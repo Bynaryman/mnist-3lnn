@@ -38,7 +38,7 @@ function readIdx(file_name)
 end
 
 t = readIdx("./train-images-idx3-ubyte.gz")
-#show(IOContext(STDOUT, limit=false), "text/plain", t[1:784])
+show(IOContext(STDOUT, limit=false), "text/plain", t[1+784:784+784])
 #print(reinterpret.(UInt, t)[1:4])
 
 # t2 = Array{UInt8}(784*5000) # each uint8 is 2 posit<4,0>
@@ -88,7 +88,7 @@ t = readIdx("./train-images-idx3-ubyte.gz")
 # close(f)
 # to create mnist 4 bits
 # f = open("./pic_to_classify_4b.raw", "w")
-NB_MLP_PER_512b_BUS = (512÷POSIT_OUT_WIDTH)
+NB_MLP_PER_512b_BUS = (64÷POSIT_OUT_WIDTH)*8
 print("NB_MLP HW per 512b bus: ", NB_MLP_PER_512b_BUS, "\n")
 removed_pictures = 60000 % NB_MLP_PER_512b_BUS
 print("removed pictures: ", removed_pictures, "\n")

@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <cstdio>
 
+#include <iomanip>
 #include <fstream>
 #include <vector>
 #include <string>
@@ -84,10 +85,9 @@ int main (int argc, char * argv[]) {
     const uint64_t posit_width = 7;
 
     // will be recomputed below
-    double char_ratio = 8/(double)posit_width;
-    std::cout << "char ratio: " << char_ratio << std::endl;
-    uint64_t chunk_width = 64 * char_ratio;
+    uint64_t chunk_width = (64 / posit_width) * 8;
     unsigned int chunk_size(PIC_DIM*chunk_width);
+    std::cout << "chunk size: " << chunk_size << std::endl;
 
     // input stuff declaration
     std::string in_file_path("");
@@ -141,6 +141,11 @@ int main (int argc, char * argv[]) {
         }
     }
 
+    for (int i = 0; i < 78400 ; i++) {
+        // if (i < 784) std::cout << i << bitset_domain_planar[i];
+        if (i%chunk_width==0)  std::cout << i << " " << bitset_domain_interleave[i] << std::endl;
+    }
+
     // convert out bitset to out char
     // for (int i = 0 ; i < size_in ; i++) {
     //     output_data[i] = (unsigned char)( ((output_data_4b[(2*i)+1].to_ulong() << 4) & 0x00000000000000F0) | (output_data_4b[(2*i)].to_ulong() & 0x000000000000000F) );
@@ -153,8 +158,29 @@ int main (int argc, char * argv[]) {
         for (int j = 0 ; j < nb_posits_in64bp ; j++) {
             uint32_t shift_amount = j * posit_width;
             interleave_posits_64b |= (bitset_domain_interleave[i+j].to_ullong() << shift_amount) ;
+            //  if (((i+j)%chunk_width)==0 && i < 78400) {
+            //      std::cout << i << " " << bitset_domain_interleave[i+j] << std::endl;
+            //      std::cout << 
+            //          i <<
+            //          " " <<
+            //          std::hex <<
+            //          std::noshowbase <<
+            //          std::setw(16) <<
+            //          std::setfill('0') <<
+            //          interleave_posits_64b <<
+            //          std::dec <<
+            //          std::endl;
+            //  }
         }
         interleave_scrathpad[k] = interleave_posits_64b;
+    }
+
+    for (int i = 0; i < 78400 ; i++) {
+        if (i%chunk_width==0)  std::cout << i << " " << bitset_domain_interleave[i] << std::dec <<  std::endl;
+    }
+
+    for (int i = 0; i < 78400 ; i++) {
+        if (i%chunk_width==1)  std::cout << i << " " << bitset_domain_interleave[i] << std::dec <<  std::endl;
     }
 
     // write out to file
